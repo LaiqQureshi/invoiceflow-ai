@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Free Invoice Maker | Create Professional Invoices Online — InvoiceFlow AI</title>
+<meta name="description" content="Generate, customize, print, export and share professional invoices online for free." />
+<meta name="keywords" content="invoice maker, free invoice generator, pdf invoice creator, whatsapp invoice, online billing software, invoice templates, printable invoice, business invoice creator" />
+<link rel="canonical" href="https://invoiceflow.ai/" />
+
+<meta property="og:type" content="website" />
+<meta property="og:title" content="InvoiceFlow AI — Free Invoice Maker" />
+<meta property="og:description" content="Build, customize, export and send invoices with a beautiful modern experience." />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="InvoiceFlow AI — Free Invoice Maker" />
+<meta name="twitter:description" content="Generate, customize, print, export and share professional invoices online for free." />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "InvoiceFlow AI",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ['"Space Grotesk"', 'sans-serif'],
+          body: ['Inter', 'sans-serif'],
+          mono: ['"JetBrains Mono"', 'monospace'],
+        },
+      }
+    }
+  }
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+  :root{
+    --bg:#FFFFFF; --surface:#FFFFFF; --surface-2:#F7F7F8; --border:#E9E9EC;
+    --text:#16171B; --muted:#85868D; --accent:#3D5AFE; --accent-ink:#FFFFFF;
+    --gold:#C8954A; --good:#1A9E6B; --bad:#D8463B;
+    --radius:12px;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; }
+  .font-display{ font-family:'Space Grotesk',sans-serif; }
+  .font-ledger{ font-family:'JetBrains Mono',monospace; font-feature-settings:"tnum"; }
+  .surface{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); }
+  .surface-2{ background:var(--surface-2); border:1px solid var(--border); border-radius:calc(var(--radius) - 6px); }
+  .glass{ background:rgba(255,255,255,.86); backdrop-filter:blur(12px) saturate(140%); border-bottom:1px solid var(--border); }
+  .accent-bg{ background:var(--accent); color:var(--accent-ink); }
+  .text-muted{ color:var(--muted); }
+  .text-accent{ color:var(--accent); }
+  .border-base{ border-color:var(--border); }
+  ::selection{ background:var(--accent); color:var(--accent-ink); }
+
+  input,textarea,select{
+    background:var(--surface-2); border:1px solid var(--border); color:var(--text);
+    border-radius:10px; padding:9px 12px; font-size:14px; width:100%; outline:none;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  input:focus,textarea:focus,select:focus{ border-color:var(--accent); box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent); }
+  label.field-label{ font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:600; margin-bottom:6px; display:block; }
+
+  .btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; border-radius:11px; padding:11px 18px; font-weight:600; font-size:14px; transition:transform .15s, box-shadow .15s, opacity .15s, background .15s; cursor:pointer; border:1px solid transparent; white-space:nowrap; }
+  .btn:active{ transform:scale(.97); }
+  .btn-primary{ background:var(--accent); color:var(--accent-ink); box-shadow:0 8px 24px -8px color-mix(in srgb, var(--accent) 70%, transparent); }
+  .btn-primary:hover{ opacity:.92; }
+  .btn-ghost{ background:transparent; border-color:var(--border); color:var(--text); }
+  .btn-ghost:hover{ background:var(--surface-2); }
+  .btn-soft{ background:var(--surface-2); border-color:var(--border); color:var(--text); }
+  .btn-soft:hover{ border-color:var(--accent); }
+  .chip{ font-size:12px; font-weight:600; padding:6px 12px; border-radius:999px; border:1px solid var(--border); cursor:pointer; transition:all .15s; color:var(--muted); }
+  .chip.active{ background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
+
+  .feature-card{ transition:transform .2s ease, border-color .2s ease; }
+  .feature-card:hover{ transform:translateY(-2px); border-color:var(--accent); }
+
+  @keyframes ticker{ from{ opacity:.3; transform:translateY(2px); } to{ opacity:1; transform:translateY(0); } }
+  .tick{ animation:ticker .25s ease-out; }
+
+  .skeleton{ background:linear-gradient(90deg, var(--surface-2) 25%, var(--border) 37%, var(--surface-2) 63%); background-size:400% 100%; animation:shimmer 1.4s ease infinite; border-radius:8px; }
+  @keyframes shimmer{ 0%{ background-position:100% 0; } 100%{ background-position:0 0; } }
+
+  .toast{ pointer-events:none; }
+  .toast-item{ animation:toastIn .25s ease-out; }
+  @keyframes toastIn{ from{ opacity:0; transform:translateY(8px) scale(.97); } to{ opacity:1; transform:translateY(0) scale(1); } }
+
+  #invoice-paper{ aspect-ratio:auto; transition:all .25s ease; }
+  .row-grip{ cursor:grab; }
+  .row-grip:active{ cursor:grabbing; }
+
+  ::-webkit-scrollbar{ width:8px; height:8px; }
+  ::-webkit-scrollbar-thumb{ background:var(--border); border-radius:8px; }
+
+  @media print{
+    body *{ visibility:hidden; }
+    #invoice-paper, #invoice-paper *{ visibility:visible; }
+    #invoice-paper{ position:absolute; left:0; top:0; width:100%; margin:0; box-shadow:none; border:none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<header class="sticky top-0 z-40 glass">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+      <div class="w-8 h-8 rounded-[9px] accent-bg flex items-center justify-center font-display font-bold text-sm">IF</div>
+      <span class="font-display font-semibold text-[17px]">InvoiceFlow <span class="text-accent">AI</span></span>
+    </div>
+    <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-muted">
+      <a href="#features" class="hover:text-[var(--text)] transition">Features</a>
+      <a href="#templates" class="hover:text-[var(--text)] transition">Templates</a>
+      <a href="#builder" class="hover:text-[var(--text)] transition">Builder</a>
+      <a href="#export" class="hover:text-[var(--text)] transition">Export</a>
+    </nav>
+    <a href="#builder" class="btn btn-primary !hidden sm:!flex">Create Invoice</a>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="relative overflow-hidden border-b border-base">
+  <div class="max-w-7xl mx-auto px-6 pt-20 pb-24 relative">
+    <div class="grid lg:grid-cols-2 gap-16 items-center">
+      <div>
+        <div class="inline-flex items-center gap-2 chip active !text-[11px] mb-6">No sign-up · 100% free</div>
+        <h1 class="font-display font-semibold text-[42px] sm:text-[56px] leading-[1.08] tracking-tight mb-6">
+          Create Professional Invoices in <span class="text-accent">Seconds</span>
+        </h1>
+        <p class="text-lg text-muted max-w-md mb-9 leading-relaxed">
+          Build, customize, export and send invoices with a beautiful modern experience. Every number renders the moment you type it.
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <a href="#builder" class="btn btn-primary !px-7 !py-3.5 text-[15px]">Create Invoice →</a>
+          <a href="#templates" class="btn btn-soft !px-7 !py-3.5 text-[15px]">View Templates</a>
+        </div>
+        <div class="flex items-center gap-6 mt-10 text-sm text-muted">
+          <div><span class="font-ledger text-[var(--text)] font-semibold">10</span> templates</div>
+          <div class="w-1 h-1 rounded-full bg-[var(--border)]"></div>
+          <div><span class="font-ledger text-[var(--text)] font-semibold">0</span> cost</div>
+          <div class="w-1 h-1 rounded-full bg-[var(--border)]"></div>
+          <div><span class="font-ledger text-[var(--text)] font-semibold">∞</span> invoices</div>
+        </div>
+      </div>
+
+      <div class="relative hidden lg:block">
+        <div class="surface shadow-[0_24px_60px_-24px_rgba(0,0,0,0.12)] p-6 ml-auto" style="max-width:380px;">
+          <div class="flex justify-between items-center mb-5 pb-5 border-b border-base">
+            <div>
+              <div class="font-display font-semibold text-sm">Acme Studio</div>
+              <div class="text-[11px] text-muted">Invoice</div>
+            </div>
+            <div class="text-right">
+              <div class="font-ledger text-[11px] text-muted">INV-0192</div>
+              <span class="text-[10px] px-2 py-0.5 rounded-full inline-block mt-1" style="background:color-mix(in srgb, var(--good) 14%, transparent); color:var(--good); font-weight:600;">PAID</span>
+            </div>
+          </div>
+          <div class="space-y-3 mb-5">
+            <div class="flex justify-between text-xs"><span class="text-muted">Brand identity & UI design</span><span class="font-ledger">$1,200.00</span></div>
+            <div class="flex justify-between text-xs"><span class="text-muted">Landing page development</span><span class="font-ledger">$950.00</span></div>
+            <div class="flex justify-between text-xs"><span class="text-muted">Design system documentation</span><span class="font-ledger">$300.00</span></div>
+          </div>
+          <div class="pt-4 border-t border-base flex justify-between items-baseline">
+            <span class="text-xs text-muted font-medium">Total due</span>
+            <span class="font-ledger font-semibold text-xl text-accent">$2,450.00</span>
+          </div>
+        </div>
+        <div class="surface shadow-[0_24px_60px_-24px_rgba(0,0,0,0.12)] p-5 absolute -bottom-8 -left-6 w-[220px]">
+          <div class="text-[11px] text-muted mb-3 font-medium">This month</div>
+          <div class="flex items-end gap-1.5 h-14">
+            <div class="flex-1 rounded-t-sm" style="height:35%; background:var(--surface-2);"></div>
+            <div class="flex-1 rounded-t-sm" style="height:55%; background:var(--surface-2);"></div>
+            <div class="flex-1 rounded-t-sm" style="height:45%; background:var(--surface-2);"></div>
+            <div class="flex-1 rounded-t-sm" style="height:80%; background:var(--accent);"></div>
+            <div class="flex-1 rounded-t-sm" style="height:60%; background:var(--surface-2);"></div>
+            <div class="flex-1 rounded-t-sm" style="height:70%; background:var(--surface-2);"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURES ============ -->
+<section id="features" class="max-w-7xl mx-auto px-6 py-24 border-t border-base">
+  <div class="max-w-xl mb-12">
+    <div class="text-xs font-semibold text-accent uppercase tracking-wider mb-3">Everything included</div>
+    <h2 class="font-display font-semibold text-3xl sm:text-4xl tracking-tight">One builder, every feature a real business needs</h2>
+  </div>
+  <div id="feature-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+</section>
+
+<!-- ============ TEMPLATES ============ -->
+<section id="templates" class="max-w-7xl mx-auto px-6 py-24 border-t border-base">
+  <div class="flex items-end justify-between mb-10 flex-wrap gap-4">
+    <div class="max-w-xl">
+      <div class="text-xs font-semibold text-accent uppercase tracking-wider mb-3">Switch freely</div>
+      <h2 class="font-display font-semibold text-3xl sm:text-4xl tracking-tight">10 layouts. Your data never resets.</h2>
+    </div>
+  </div>
+  <div id="template-gallery" class="grid sm:grid-cols-2 lg:grid-cols-5 gap-3"></div>
+</section>
+
+<!-- ============ BUILDER ============ -->
+<section id="builder" class="max-w-7xl mx-auto px-6 py-24 border-t border-base">
+  <div class="flex items-end justify-between mb-8 flex-wrap gap-4">
+    <div>
+      <div class="text-xs font-semibold text-accent uppercase tracking-wider mb-3">The workspace</div>
+      <h2 class="font-display font-semibold text-3xl sm:text-4xl tracking-tight">Invoice Builder</h2>
+    </div>
+    <div class="flex items-center gap-2">
+      <button id="btn-undo" class="btn btn-ghost !px-3 !py-2" title="Undo (Ctrl+Z)">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6"/><path d="M3 13a9 9 0 1018-1"/></svg>
+      </button>
+      <button id="btn-redo" class="btn btn-ghost !px-3 !py-2" title="Redo (Ctrl+Shift+Z)">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7v6h-6"/><path d="M21 13a9 9 0 10-18-1"/></svg>
+      </button>
+      <span id="autosave-status" class="text-xs text-muted ml-2">All changes saved</span>
+    </div>
+  </div>
+
+  <div class="grid lg:grid-cols-[1fr_440px] gap-6 items-start">
+
+    <!-- LEFT: FORM -->
+    <div class="space-y-5">
+
+      <!-- Business Info -->
+      <div class="surface p-6">
+        <div class="flex items-center justify-between mb-5">
+          <h3 class="font-display font-semibold text-base">Your business</h3>
+          <span class="text-[11px] text-muted">Step 1</span>
+        </div>
+        <div class="flex items-center gap-4 mb-5">
+          <div id="logo-drop" class="w-16 h-16 rounded-xl surface-2 flex items-center justify-center text-muted cursor-pointer overflow-hidden shrink-0 border-2 border-dashed border-base">
+            <svg id="logo-placeholder-icon" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14M14 8h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            <img id="logo-preview" class="hidden w-full h-full object-cover" />
+          </div>
+          <input type="file" id="logo-input" accept="image/*" class="hidden" />
+          <div class="text-xs text-muted leading-relaxed">Drop your logo here, or <button id="logo-browse" class="text-accent font-semibold">browse files</button>. PNG or JPG.</div>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div><label class="field-label">Business name</label><input data-bind="biz.name" placeholder="Acme Studio" /></div>
+          <div><label class="field-label">Tax number</label><input data-bind="biz.tax" placeholder="TAX-00219" /></div>
+          <div class="sm:col-span-2"><label class="field-label">Address</label><input data-bind="biz.address" placeholder="221B Baker Street, Karachi" /></div>
+          <div><label class="field-label">Email</label><input data-bind="biz.email" placeholder="hello@acme.studio" /></div>
+          <div><label class="field-label">Phone</label><input data-bind="biz.phone" placeholder="+92 300 0000000" /></div>
+          <div><label class="field-label">Website</label><input data-bind="biz.website" placeholder="acme.studio" /></div>
+          <div><label class="field-label">Registration #</label><input data-bind="biz.reg" placeholder="REG-88213" /></div>
+        </div>
+      </div>
+
+      <!-- Client Info -->
+      <div class="surface p-6">
+        <div class="flex items-center justify-between mb-5">
+          <h3 class="font-display font-semibold text-base">Bill to</h3>
+          <span class="text-[11px] text-muted">Step 2</span>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div><label class="field-label">Client name</label><input data-bind="client.name" placeholder="Sundberg Architecture" /></div>
+          <div><label class="field-label">Company</label><input data-bind="client.company" placeholder="Sundberg & Co." /></div>
+          <div class="sm:col-span-2"><label class="field-label">Address</label><input data-bind="client.address" placeholder="14 Marina Boulevard, Lagos" /></div>
+          <div><label class="field-label">Phone</label><input data-bind="client.phone" placeholder="+234 000 0000" /></div>
+          <div><label class="field-label">Email</label><input data-bind="client.email" placeholder="client@email.com" /></div>
+          <div><label class="field-label">Tax ID</label><input data-bind="client.tax" placeholder="TX-4471" /></div>
+        </div>
+      </div>
+
+      <!-- Invoice Details -->
+      <div class="surface p-6">
+        <div class="flex items-center justify-between mb-5">
+          <h3 class="font-display font-semibold text-base">Invoice details</h3>
+          <span class="text-[11px] text-muted">Step 3</span>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-4 mb-4">
+          <div><label class="field-label">Invoice number</label>
+            <div class="flex gap-2">
+              <input data-bind="meta.number" class="font-ledger" />
+              <button id="btn-regen-number" class="btn btn-soft !px-3 !py-2" title="Generate new number">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+              </button>
+            </div>
+          </div>
+          <div><label class="field-label">Currency</label>
+            <select data-bind="meta.currency">
+              <option value="$">USD — $</option>
+              <option value="€">EUR — €</option>
+              <option value="£">GBP — £</option>
+              <option value="₨">PKR — ₨</option>
+              <option value="₹">INR — ₹</option>
+              <option value="AED">AED — د.إ</option>
+            </select>
+          </div>
+          <div><label class="field-label">Issue date</label><input type="date" data-bind="meta.issueDate" /></div>
+          <div><label class="field-label">Due date</label><input type="date" data-bind="meta.dueDate" /></div>
+          <div><label class="field-label">Language</label>
+            <select data-bind="meta.language">
+              <option value="en">English</option>
+              <option value="ur">اردو — Urdu</option>
+              <option value="ar">العربية — Arabic</option>
+              <option value="es">Español</option>
+              <option value="fr">Français</option>
+            </select>
+          </div>
+          <div><label class="field-label">Page size</label>
+            <select data-bind="meta.pageSize">
+              <option value="A4">A4</option>
+              <option value="Letter">US Letter</option>
+              <option value="Legal">Legal</option>
+              <option value="A5">A5</option>
+              <option value="Receipt">Receipt (80mm)</option>
+              <option value="Thermal">Thermal (58mm)</option>
+            </select>
+          </div>
+        </div>
+        <div><label class="field-label">Notes</label><textarea data-bind="meta.notes" rows="2" placeholder="Thank you for your business."></textarea></div>
+        <div class="mt-4 flex items-center justify-between">
+          <label class="field-label mb-0">Terms & conditions</label>
+          <button id="btn-ai-terms" class="text-[11px] font-semibold text-accent flex items-center gap-1">✦ Suggest with AI</button>
+        </div>
+        <textarea data-bind="meta.terms" rows="2" placeholder="Payment due within 14 days."></textarea>
+      </div>
+
+      <!-- Line Items -->
+      <div class="surface p-6">
+        <div class="flex items-center justify-between mb-5">
+          <h3 class="font-display font-semibold text-base">Items & services</h3>
+          <button id="btn-add-row" class="btn btn-soft !py-1.5 !px-3 text-xs">+ Add row</button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm min-w-[640px]">
+            <thead>
+              <tr class="text-left text-[11px] uppercase tracking-wider text-muted">
+                <th class="pb-2 pr-2 w-6"></th>
+                <th class="pb-2 pr-2">Item</th>
+                <th class="pb-2 pr-2 w-16">Qty</th>
+                <th class="pb-2 pr-2 w-24">Price</th>
+                <th class="pb-2 pr-2 w-16">Tax%</th>
+                <th class="pb-2 pr-2 w-16">Disc%</th>
+                <th class="pb-2 pr-2 w-24 text-right">Total</th>
+                <th class="pb-2 w-16"></th>
+              </tr>
+            </thead>
+            <tbody id="items-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Smart Features -->
+      <div class="surface p-6">
+        <h3 class="font-display font-semibold text-base mb-4">Smart tools</h3>
+        <div class="grid sm:grid-cols-2 gap-3">
+          <button id="btn-ai-desc" class="btn btn-soft !justify-start text-left text-xs leading-tight !py-3">✦ AI line-item description<div class="text-muted font-normal">Polish your last item's wording</div></button>
+          <button id="btn-ai-reminder" class="btn btn-soft !justify-start text-left text-xs leading-tight !py-3">✦ AI payment reminder<div class="text-muted font-normal">Draft a friendly follow-up</div></button>
+          <button id="btn-duplicate-invoice" class="btn btn-soft !justify-start text-left text-xs leading-tight !py-3">⧉ Duplicate this invoice<div class="text-muted font-normal">Start a new one from this data</div></button>
+          <button id="btn-clear" class="btn btn-soft !justify-start text-left text-xs leading-tight !py-3">⟲ Clear form<div class="text-muted font-normal">Reset to a blank invoice</div></button>
+        </div>
+        <div id="recent-invoices" class="mt-5 pt-5 border-t border-base">
+          <div class="text-[11px] uppercase tracking-wider text-muted font-semibold mb-3">Recent drafts</div>
+          <div id="recent-list" class="space-y-2 text-sm"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: PREVIEW + CONTROLS -->
+    <div class="space-y-5 lg:sticky lg:top-24">
+
+      <div class="flex items-center gap-2 overflow-x-auto pb-1" id="template-chips"></div>
+
+      <div class="surface p-5 overflow-x-auto">
+        <div id="invoice-paper" class="mx-auto bg-white text-[#14141B] shadow-xl" style="width:100%; max-width:480px; border-radius:6px; overflow:hidden;">
+          <!-- rendered by JS -->
+        </div>
+      </div>
+
+      <!-- Theme customization -->
+      <div class="surface p-5">
+        <h3 class="font-display font-semibold text-sm mb-4">Theme</h3>
+        <div class="grid grid-cols-2 gap-3 mb-3">
+          <div>
+            <label class="field-label">Brand color</label>
+            <div class="flex gap-1.5" id="brand-swatches"></div>
+          </div>
+          <div>
+            <label class="field-label">Border radius</label>
+            <input type="range" min="0" max="20" id="radius-range" class="w-full" />
+          </div>
+        </div>
+        <div>
+          <label class="field-label">Invoice font</label>
+          <select id="font-select">
+            <option value="Inter">Inter — Modern</option>
+            <option value="'Space Grotesk'">Space Grotesk — Bold</option>
+            <option value="'JetBrains Mono'">JetBrains Mono — Ledger</option>
+            <option value="Georgia">Georgia — Classic</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Export Center -->
+      <div id="export" class="surface p-5">
+        <h3 class="font-display font-semibold text-sm mb-4">Export center</h3>
+        <div class="grid grid-cols-2 gap-2">
+          <button id="btn-pdf" class="btn btn-primary !py-2.5 text-xs">Download PDF</button>
+          <button id="btn-pdf-hd" class="btn btn-soft !py-2.5 text-xs">High-Res PDF</button>
+          <button id="btn-print" class="btn btn-soft !py-2.5 text-xs">Print Invoice</button>
+          <button id="btn-png" class="btn btn-soft !py-2.5 text-xs">Download PNG</button>
+          <button id="btn-jpg" class="btn btn-soft !py-2.5 text-xs">Download JPG</button>
+          <button id="btn-json" class="btn btn-soft !py-2.5 text-xs">Export JSON</button>
+          <button id="btn-copy-link" class="btn btn-soft !py-2.5 text-xs">Copy Link</button>
+          <button id="btn-save-draft" class="btn btn-soft !py-2.5 text-xs">Save Draft</button>
+        </div>
+      </div>
+
+      <!-- WhatsApp -->
+      <div class="surface p-5">
+        <h3 class="font-display font-semibold text-sm mb-3 flex items-center gap-2">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="#25D366"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.84.5 3.6 1.4 5.1L2 22l5.2-1.5c1.46.8 3.1 1.23 4.84 1.23 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2z"/></svg>
+          Share via WhatsApp
+        </h3>
+        <p class="text-xs text-muted mb-3 leading-relaxed">Generates a ready-to-send message with your invoice summary.</p>
+        <button id="btn-whatsapp" class="btn !w-full !py-2.5 text-xs text-white" style="background:#25D366;">Open WhatsApp Web</button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer class="border-t border-base py-10">
+  <div class="max-w-7xl mx-auto px-6 flex flex-wrap items-center justify-between gap-4 text-sm text-muted">
+    <div class="flex items-center gap-2.5">
+      <div class="w-6 h-6 rounded-md accent-bg flex items-center justify-center font-display font-bold text-[10px]">IF</div>
+      <span class="font-display font-medium text-[var(--text)]">InvoiceFlow AI</span>
+    </div>
+    <div>Free forever. Your data stays in your browser.</div>
+  </div>
+</footer>
+
+<div id="toast-container" class="toast fixed bottom-6 right-6 z-50 flex flex-col gap-2 items-end"></div>
+
+<script>
+/* ============================ DATA ============================ */
+const FEATURES = [
+  ["Upload Business Logo","Drop a logo and see it on the invoice instantly."],
+  ["Add Business Details","Name, address, tax number, registration — all in one place."],
+  ["Customer Information","Keep every client's billing details organized."],
+  ["Multiple Invoice Templates","Ten layouts, switch without losing your data."],
+  ["Invoice Number Generator","Sequential numbers, generated automatically."],
+  ["Tax Calculations","Per-line tax that totals itself."],
+  ["Discount Calculations","Flat or percentage discounts, calculated live."],
+  ["Currency Support","USD, EUR, GBP, PKR, INR, AED and more."],
+  ["Multi-language Ready","English, Urdu, Arabic, Spanish, French."],
+  ["PDF Export","Crisp, print-ready PDF in one click."],
+  ["WhatsApp Sharing","Send a polished invoice summary instantly."],
+  ["Print Invoice","Browser print, perfectly formatted."],
+  ["Download Invoice","PNG, JPG or JSON — your choice."],
+  ["Dark Mode","Built for long nights and bright mornings."],
+  ["Mobile Friendly","Build an invoice from your phone."],
+  ["Auto Calculations","Subtotal to grand total, always correct."],
+  ["Save Draft","Pick up exactly where you left off."],
+  ["Professional Layouts","Designed to be taken seriously."],
+];
+
+const TEMPLATES = [
+  { id:'modern', name:'Modern Minimal', accent:'#5B5FEF', font:'Inter', radius:10, density:'airy' },
+  { id:'corporate', name:'Corporate Professional', accent:'#1F4E8C', font:'Inter', radius:4, density:'dense' },
+  { id:'creative', name:'Creative Agency', accent:'#E0533D', font:"'Space Grotesk'", radius:18, density:'airy' },
+  { id:'architect', name:'Architect & Designer', accent:'#14141B', font:'Inter', radius:0, density:'dense' },
+  { id:'contractor', name:'Contractor Invoice', accent:'#D69A2D', font:'Inter', radius:6, density:'dense' },
+  { id:'luxury', name:'Elegant Luxury', accent:'#D4AF37', font:'Georgia', radius:2, density:'airy' },
+  { id:'startup', name:'Startup SaaS', accent:'#7C72FF', font:"'Space Grotesk'", radius:16, density:'airy' },
+  { id:'retail', name:'Retail Business', accent:'#1FA971', font:'Inter', radius:8, density:'dense' },
+  { id:'freelancer', name:'Freelancer', accent:'#5B5FEF', font:'Inter', radius:12, density:'airy' },
+  { id:'editorial', name:'Contemporary Editorial', accent:'#14141B', font:"'Space Grotesk'", radius:0, density:'airy' },
+];
+
+const PAGE_RATIO = { A4:1.414, Letter:1.294, Legal:1.647, A5:1.414, Receipt:2.6, Thermal:3.2 };
+const SWATCHES = ['#5B5FEF','#1F4E8C','#E0533D','#14141B','#D69A2D','#D4AF37','#1FA971','#7C72FF'];
+
+/* ============================ STATE ============================ */
+function blankInvoice(){
+  const today = new Date();
+  const due = new Date(); due.setDate(due.getDate()+14);
+  return {
+    biz:{ name:'', address:'', email:'', phone:'', website:'', tax:'', reg:'', logo:'' },
+    client:{ name:'', company:'', address:'', phone:'', email:'', tax:'' },
+    meta:{
+      number:'INV-' + String(Math.floor(1000+Math.random()*9000)),
+      issueDate: today.toISOString().slice(0,10),
+      dueDate: due.toISOString().slice(0,10),
+      currency:'$', language:'en', pageSize:'A4', notes:'', terms:'Payment due within 14 days of the invoice date.'
+    },
+    items:[ { name:'Design services', desc:'Brand identity & UI design', qty:1, price:500, tax:0, disc:0 } ],
+    theme:{ accent:'#5B5FEF', radius:10, font:'Inter' },
+    template:'modern'
+  };
+}
+
+let state = loadFromStorage() || blankInvoice();
+let history = [JSON.parse(JSON.stringify(state))];
+let historyIndex = 0;
+let saveTimer = null;
+
+function loadFromStorage(){
+  try{ const raw = localStorage.getItem('invoiceflow_current'); return raw ? JSON.parse(raw) : null; }catch(e){ return null; }
+}
+function persist(){
+  localStorage.setItem('invoiceflow_current', JSON.stringify(state));
+  const status = document.getElementById('autosave-status');
+  status.textContent = 'Saving…';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>{ status.textContent = 'All changes saved'; }, 450);
+}
+function pushHistory(){
+  history = history.slice(0, historyIndex+1);
+  history.push(JSON.parse(JSON.stringify(state)));
+  historyIndex = history.length-1;
+}
+function setState(mutator, {record=true} = {}){
+  mutator(state);
+  if(record) pushHistory();
+  persist();
+  renderAll();
+}
+function getPath(obj, path){ return path.split('.').reduce((o,k)=>o&&o[k], obj); }
+function setPath(obj, path, value){
+  const keys = path.split('.'); let o = obj;
+  for(let i=0;i<keys.length-1;i++) o = o[keys[i]];
+  o[keys[keys.length-1]] = value;
+}
+
+/* ============================ TOASTS ============================ */
+function toast(msg){
+  const c = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className = 'toast-item surface px-4 py-3 text-sm shadow-xl flex items-center gap-2';
+  el.innerHTML = `<span class="text-accent">✓</span> ${msg}`;
+  c.appendChild(el);
+  setTimeout(()=>{ el.style.transition='opacity .3s'; el.style.opacity='0'; setTimeout(()=>el.remove(),300); }, 2600);
+}
+
+/* ============================ RENDER: FEATURES ============================ */
+function renderFeatures(){
+  const grid = document.getElementById('feature-grid');
+  grid.innerHTML = FEATURES.map((f,i)=>`
+    <div class="feature-card surface p-5">
+      <div class="w-9 h-9 rounded-lg surface-2 flex items-center justify-center text-accent font-ledger text-xs font-semibold mb-3">${String(i+1).padStart(2,'0')}</div>
+      <div class="font-display font-semibold text-sm mb-1.5">${f[0]}</div>
+      <div class="text-xs text-muted leading-relaxed">${f[1]}</div>
+    </div>
+  `).join('');
+}
+
+/* ============================ RENDER: TEMPLATE GALLERY ============================ */
+function renderTemplateGallery(){
+  const gal = document.getElementById('template-gallery');
+  gal.innerHTML = TEMPLATES.map(t=>`
+    <button data-template="${t.id}" class="template-card surface p-4 text-left hover:border-accent transition group">
+      <div class="h-20 rounded-md mb-3 flex flex-col p-2 gap-1" style="background:#fff; border:1px solid var(--border);">
+        <div class="h-1.5 w-1/2 rounded" style="background:${t.accent};"></div>
+        <div class="h-1 w-3/4 rounded bg-gray-200"></div>
+        <div class="h-1 w-2/3 rounded bg-gray-200"></div>
+        <div class="mt-auto h-1.5 w-1/3 rounded self-end" style="background:${t.accent};"></div>
+      </div>
+      <div class="text-xs font-semibold font-display">${t.name}</div>
+    </button>
+  `).join('');
+  gal.querySelectorAll('[data-template]').forEach(btn=>{
+    btn.addEventListener('click', ()=>applyTemplate(btn.dataset.template, true));
+  });
+
+  const chips = document.getElementById('template-chips');
+  chips.innerHTML = TEMPLATES.map(t=>`<button class="chip shrink-0" data-chip="${t.id}">${t.name}</button>`).join('');
+  chips.querySelectorAll('[data-chip]').forEach(btn=>{
+    btn.addEventListener('click', ()=>applyTemplate(btn.dataset.chip, true));
+  });
+}
+function applyTemplate(id, record){
+  const t = TEMPLATES.find(x=>x.id===id); if(!t) return;
+  setState(s=>{
+    s.template = id;
+    s.theme.accent = t.accent;
+    s.theme.radius = t.radius;
+    s.theme.font = t.font;
+  }, {record});
+  toast(`Switched to ${t.name}`);
+}
+
+/* ============================ RENDER: THEME PANEL ============================ */
+function renderThemePanel(){
+  const sw = document.getElementById('brand-swatches');
+  sw.innerHTML = SWATCHES.map(c=>`<button data-color="${c}" class="w-6 h-6 rounded-full border-2" style="background:${c}; border-color:${c===state.theme.accent?'var(--text)':'transparent'};"></button>`).join('');
+  sw.querySelectorAll('[data-color]').forEach(b=>{
+    b.addEventListener('click', ()=> setState(s=>{ s.theme.accent = b.dataset.color; }));
+  });
+  document.getElementById('radius-range').value = state.theme.radius;
+  document.getElementById('font-select').value = state.theme.font;
+}
+
+/* ============================ ITEMS ============================ */
+function lineTotal(item){
+  const base = item.qty * item.price;
+  const discounted = base - (base * (item.disc||0)/100);
+  return discounted + (discounted * (item.tax||0)/100);
+}
+function renderItemsForm(){
+  const body = document.getElementById('items-body');
+  body.innerHTML = state.items.map((it,i)=>`
+    <tr class="border-t border-base">
+      <td class="py-2 pr-2 text-muted row-grip">⠿</td>
+      <td class="py-2 pr-2"><input data-item="${i}.name" value="${esc(it.name)}" placeholder="Item name" class="mb-1" /><input data-item="${i}.desc" value="${esc(it.desc)}" placeholder="Description" /></td>
+      <td class="py-2 pr-2"><input data-item="${i}.qty" type="number" min="0" value="${it.qty}" /></td>
+      <td class="py-2 pr-2"><input data-item="${i}.price" type="number" min="0" value="${it.price}" /></td>
+      <td class="py-2 pr-2"><input data-item="${i}.tax" type="number" min="0" value="${it.tax}" /></td>
+      <td class="py-2 pr-2"><input data-item="${i}.disc" type="number" min="0" value="${it.disc}" /></td>
+      <td class="py-2 pr-2 text-right font-ledger font-medium tick">${fmt(lineTotal(it))}</td>
+      <td class="py-2"><div class="flex gap-1">
+        <button data-dup="${i}" class="text-muted hover:text-accent" title="Duplicate">⧉</button>
+        <button data-del="${i}" class="text-muted hover:text-[var(--bad)]" title="Remove">✕</button>
+      </div></td>
+    </tr>
+  `).join('');
+  body.querySelectorAll('[data-item]').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      const [idx,key] = inp.dataset.item.split('.');
+      const val = (key==='qty'||key==='price'||key==='tax'||key==='disc') ? parseFloat(inp.value||0) : inp.value;
+      setState(s=>{ s.items[idx][key] = val; }, {record:false});
+    });
+    inp.addEventListener('change', ()=> pushHistory());
+  });
+  body.querySelectorAll('[data-del]').forEach(b=> b.addEventListener('click', ()=>{
+    setState(s=>{ if(s.items.length>1) s.items.splice(+b.dataset.del,1); });
+  }));
+  body.querySelectorAll('[data-dup]').forEach(b=> b.addEventListener('click', ()=>{
+    setState(s=>{ s.items.splice(+b.dataset.dup+1,0, JSON.parse(JSON.stringify(s.items[+b.dataset.dup]))); });
+  }));
+}
+
+/* ============================ FINANCIAL SUMMARY ============================ */
+function computeTotals(){
+  let subtotal=0, taxTotal=0, discTotal=0;
+  state.items.forEach(it=>{
+    const base = it.qty*it.price;
+    const disc = base*(it.disc||0)/100;
+    const tax = (base-disc)*(it.tax||0)/100;
+    subtotal += base; discTotal += disc; taxTotal += tax;
+  });
+  const grand = subtotal - discTotal + taxTotal;
+  return { subtotal, taxTotal, discTotal, grand };
+}
+function fmt(n){ return Number(n||0).toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2}); }
+function esc(s){ return (s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+/* ============================ INVOICE PREVIEW ============================ */
+function renderPreview(){
+  const t = state.theme;
+  const ratio = PAGE_RATIO[state.meta.pageSize] || 1.414;
+  const paper = document.getElementById('invoice-paper');
+  paper.style.setProperty('--inv-accent', t.accent);
+  paper.style.fontFamily = t.font;
+  paper.style.borderRadius = t.radius+'px';
+  paper.style.minHeight = (480*ratio)+'px';
+
+  const totals = computeTotals();
+  const cur = state.meta.currency;
+  const dense = (TEMPLATES.find(x=>x.id===state.template)||{}).density === 'dense';
+  const pad = dense ? '20px 22px' : '32px 28px';
+
+  paper.innerHTML = `
+    <div style="padding:${pad};">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:${dense?'18px':'30px'};">
+        <div style="display:flex; gap:10px; align-items:center;">
+          ${state.biz.logo ? `<img src="${state.biz.logo}" style="width:42px;height:42px;border-radius:8px;object-fit:cover;" />` : `<div style="width:42px;height:42px;border-radius:8px;background:${t.accent};"></div>`}
+          <div>
+            <div style="font-weight:700; font-size:16px;">${esc(state.biz.name)||'Your Business Name'}</div>
+            <div style="font-size:11px; color:#777;">${esc(state.biz.address)||'Business address'}</div>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:22px; font-weight:700; letter-spacing:.04em; color:${t.accent};">INVOICE</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#777;">${esc(state.meta.number)}</div>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; gap:24px; margin-bottom:${dense?'16px':'26px'}; font-size:12px;">
+        <div>
+          <div style="text-transform:uppercase; letter-spacing:.05em; font-size:10px; color:#999; margin-bottom:4px;">Billed to</div>
+          <div style="font-weight:600;">${esc(state.client.name)||'Client name'}</div>
+          <div style="color:#777;">${esc(state.client.company)}</div>
+          <div style="color:#777;">${esc(state.client.address)}</div>
+          <div style="color:#777;">${esc(state.client.email)}</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="margin-bottom:6px;"><span style="color:#999;">Issue date </span><span style="font-family:'JetBrains Mono',monospace;">${state.meta.issueDate||'—'}</span></div>
+          <div><span style="color:#999;">Due date </span><span style="font-family:'JetBrains Mono',monospace; color:${t.accent}; font-weight:600;">${state.meta.dueDate||'—'}</span></div>
+        </div>
+      </div>
+
+      <table style="width:100%; font-size:12px; border-collapse:collapse; margin-bottom:${dense?'14px':'20px'};">
+        <thead>
+          <tr style="border-bottom:1.5px solid #eee; text-align:left; color:#999; text-transform:uppercase; font-size:9.5px; letter-spacing:.05em;">
+            <th style="padding:6px 4px;">Item</th><th style="padding:6px 4px; text-align:center;">Qty</th><th style="padding:6px 4px; text-align:right;">Price</th><th style="padding:6px 4px; text-align:right;">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+        ${state.items.map(it=>`
+          <tr style="border-bottom:1px solid #f1f1f1;">
+            <td style="padding:8px 4px;"><div style="font-weight:600;">${esc(it.name)||'Item'}</div><div style="color:#999; font-size:10.5px;">${esc(it.desc)}</div></td>
+            <td style="padding:8px 4px; text-align:center;">${it.qty}</td>
+            <td style="padding:8px 4px; text-align:right; font-family:'JetBrains Mono',monospace;">${cur}${fmt(it.price)}</td>
+            <td style="padding:8px 4px; text-align:right; font-family:'JetBrains Mono',monospace; font-weight:600;">${cur}${fmt(lineTotal(it))}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+
+      <div style="display:flex; justify-content:flex-end; margin-bottom:${dense?'16px':'24px'};">
+        <div style="width:220px; font-size:12px;">
+          <div style="display:flex; justify-content:space-between; padding:4px 0; color:#777;"><span>Subtotal</span><span style="font-family:'JetBrains Mono',monospace;">${cur}${fmt(totals.subtotal)}</span></div>
+          <div style="display:flex; justify-content:space-between; padding:4px 0; color:#777;"><span>Discount</span><span style="font-family:'JetBrains Mono',monospace;">−${cur}${fmt(totals.discTotal)}</span></div>
+          <div style="display:flex; justify-content:space-between; padding:4px 0; color:#777;"><span>Tax</span><span style="font-family:'JetBrains Mono',monospace;">${cur}${fmt(totals.taxTotal)}</span></div>
+          <div style="display:flex; justify-content:space-between; padding:10px 0; margin-top:4px; border-top:1.5px solid #eee; font-weight:700; font-size:15px;"><span>Total due</span><span style="font-family:'JetBrains Mono',monospace; color:${t.accent};">${cur}${fmt(totals.grand)}</span></div>
+        </div>
+      </div>
+
+      ${state.meta.notes ? `<div style="font-size:11px; color:#777; margin-bottom:10px;"><strong style="color:#333;">Notes:</strong> ${esc(state.meta.notes)}</div>` : ''}
+      ${state.meta.terms ? `<div style="font-size:10.5px; color:#999; border-top:1px solid #f1f1f1; padding-top:10px;">${esc(state.meta.terms)}</div>` : ''}
+    </div>
+  `;
+}
+
+/* ============================ BIND PLAIN FIELDS ============================ */
+function bindFields(){
+  document.querySelectorAll('[data-bind]').forEach(el=>{
+    el.value = getPath(state, el.dataset.bind) ?? '';
+    el.addEventListener('input', ()=>{
+      setState(s=> setPath(s, el.dataset.bind, el.value), {record:false});
+    });
+    el.addEventListener('change', ()=> pushHistory());
+  });
+}
+
+/* ============================ RECENT DRAFTS ============================ */
+function getDrafts(){ try{ return JSON.parse(localStorage.getItem('invoiceflow_drafts')||'[]'); }catch(e){ return []; } }
+function renderRecent(){
+  const list = document.getElementById('recent-list');
+  const drafts = getDrafts();
+  if(!drafts.length){ list.innerHTML = `<div class="text-xs text-muted">No saved drafts yet.</div>`; return; }
+  list.innerHTML = drafts.slice(0,5).map((d,i)=>`
+    <button data-draft="${i}" class="w-full flex items-center justify-between surface-2 px-3 py-2 rounded-lg hover:border-accent border border-transparent text-left">
+      <span class="font-ledger text-xs">${esc(d.meta.number)}</span>
+      <span class="text-xs text-muted">${esc(d.client.name)||'Untitled client'}</span>
+    </button>`).join('');
+  list.querySelectorAll('[data-draft]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      setState(s=> Object.assign(s, JSON.parse(JSON.stringify(drafts[+b.dataset.draft]))));
+      toast('Draft loaded');
+    });
+  });
+}
+
+/* ============================ RENDER ALL ============================ */
+function renderAll(){
+  renderItemsForm();
+  renderPreview();
+  renderThemePanel();
+  document.querySelectorAll('[data-bind]').forEach(el=>{ if(document.activeElement!==el) el.value = getPath(state, el.dataset.bind) ?? ''; });
+  document.querySelectorAll('[data-chip]').forEach(b=> b.classList.toggle('active', b.dataset.chip===state.template));
+  document.getElementById('btn-undo').style.opacity = historyIndex>0 ? 1 : .35;
+  document.getElementById('btn-redo').style.opacity = historyIndex<history.length-1 ? 1 : .35;
+}
+
+/* ============================ ACTIONS ============================ */
+document.getElementById('btn-add-row').addEventListener('click', ()=>{
+  setState(s=> s.items.push({name:'', desc:'', qty:1, price:0, tax:0, disc:0}));
+});
+document.getElementById('btn-regen-number').addEventListener('click', ()=>{
+  setState(s=> s.meta.number = 'INV-' + String(Math.floor(1000+Math.random()*9000)));
+  toast('New invoice number generated');
+});
+document.getElementById('btn-clear').addEventListener('click', ()=>{
+  if(confirm('Clear the current invoice form?')){ setState(s=> Object.assign(s, blankInvoice())); toast('Form cleared'); }
+});
+document.getElementById('btn-duplicate-invoice').addEventListener('click', ()=>{
+  const copy = JSON.parse(JSON.stringify(state)); copy.meta.number = 'INV-' + String(Math.floor(1000+Math.random()*9000));
+  setState(s=> Object.assign(s, copy)); toast('Invoice duplicated with a new number');
+});
+document.getElementById('btn-save-draft').addEventListener('click', ()=>{
+  const drafts = getDrafts();
+  drafts.unshift(JSON.parse(JSON.stringify(state)));
+  localStorage.setItem('invoiceflow_drafts', JSON.stringify(drafts.slice(0,10)));
+  renderRecent();
+  toast('Draft saved locally');
+});
+
+document.getElementById('btn-undo').addEventListener('click', ()=>{
+  if(historyIndex>0){ historyIndex--; state = JSON.parse(JSON.stringify(history[historyIndex])); persist(); renderAll(); }
+});
+document.getElementById('btn-redo').addEventListener('click', ()=>{
+  if(historyIndex<history.length-1){ historyIndex++; state = JSON.parse(JSON.stringify(history[historyIndex])); persist(); renderAll(); }
+});
+document.addEventListener('keydown', (e)=>{
+  if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='z'){
+    e.preventDefault();
+    if(e.shiftKey) document.getElementById('btn-redo').click(); else document.getElementById('btn-undo').click();
+  }
+});
+
+/* Logo upload */
+const logoInput = document.getElementById('logo-input');
+document.getElementById('logo-browse').addEventListener('click', ()=> logoInput.click());
+document.getElementById('logo-drop').addEventListener('click', ()=> logoInput.click());
+['dragover','drop'].forEach(evt=>{
+  document.getElementById('logo-drop').addEventListener(evt, e=> e.preventDefault());
+});
+document.getElementById('logo-drop').addEventListener('drop', e=>{
+  const file = e.dataTransfer.files[0]; if(file) readLogo(file);
+});
+logoInput.addEventListener('change', e=>{ const file = e.target.files[0]; if(file) readLogo(file); });
+function readLogo(file){
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    setState(s=> s.biz.logo = reader.result);
+    document.getElementById('logo-preview').src = reader.result;
+    document.getElementById('logo-preview').classList.remove('hidden');
+    document.getElementById('logo-placeholder-icon').classList.add('hidden');
+  };
+  reader.readAsDataURL(file);
+}
+
+/* Theme controls */
+document.getElementById('radius-range').addEventListener('input', e=>{
+  setState(s=> s.theme.radius = +e.target.value, {record:false});
+});
+document.getElementById('font-select').addEventListener('change', e=>{
+  setState(s=> s.theme.font = e.target.value);
+});
+
+/* AI-style smart text generators (template based, instant, on-device) */
+const TERMS_BANK = [
+  "Payment due within 14 days of the invoice date. Late payments may incur a 2% monthly fee.",
+  "Full payment is due upon receipt. Bank transfer details are available on request.",
+  "50% deposit required to begin work, remaining balance due on delivery.",
+];
+const REMINDER_BANK = [
+  "Hi {client}, just a friendly note that invoice {number} for {amount} is due on {due}. Let me know if you have any questions!",
+  "Hello {client}, hope you're well. This is a quick reminder that {amount} is outstanding on invoice {number}, due {due}.",
+];
+document.getElementById('btn-ai-terms').addEventListener('click', ()=>{
+  setState(s=> s.meta.terms = TERMS_BANK[Math.floor(Math.random()*TERMS_BANK.length)]);
+  toast('Terms suggested');
+});
+document.getElementById('btn-ai-desc').addEventListener('click', ()=>{
+  setState(s=>{
+    const last = s.items[s.items.length-1];
+    if(last) last.desc = (last.desc || last.name || 'Service') + ' — delivered to brief, on schedule, ready for review.';
+  });
+  toast('Description polished');
+});
+document.getElementById('btn-ai-reminder').addEventListener('click', ()=>{
+  const totals = computeTotals();
+  const tpl = REMINDER_BANK[Math.floor(Math.random()*REMINDER_BANK.length)];
+  const msg = tpl.replace('{client}', state.client.name||'there').replace('{number}', state.meta.number).replace('{amount}', state.meta.currency+fmt(totals.grand)).replace('{due}', state.meta.dueDate);
+  navigator.clipboard?.writeText(msg);
+  toast('Reminder copied to clipboard');
+});
+
+/* WhatsApp */
+document.getElementById('btn-whatsapp').addEventListener('click', ()=>{
+  const totals = computeTotals();
+  const msg = `Hello ${state.client.name||''}, your invoice is ready.\n\nInvoice: ${state.meta.number}\nAmount due: ${state.meta.currency}${fmt(totals.grand)}\nDue date: ${state.meta.dueDate}\n\nPlease review the attached invoice. Thank you!`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+});
+
+/* Export: JSON */
+document.getElementById('btn-json').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  downloadBlob(blob, `${state.meta.number}.json`);
+  toast('JSON exported');
+});
+/* Export: Copy link (data URL of JSON state, shareable within this browser) */
+document.getElementById('btn-copy-link').addEventListener('click', ()=>{
+  const encoded = btoa(encodeURIComponent(JSON.stringify(state)));
+  const url = `${location.origin}${location.pathname}#invoice=${encoded}`;
+  navigator.clipboard?.writeText(url);
+  toast('Shareable link copied');
+});
+/* Print */
+document.getElementById('btn-print').addEventListener('click', ()=> window.print());
+
+/* PDF / PNG / JPG via html2canvas + jsPDF */
+function downloadBlob(blob, filename){
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; a.click();
+  setTimeout(()=> URL.revokeObjectURL(a.href), 2000);
+}
+async function captureCanvas(scale){
+  return await html2canvas(document.getElementById('invoice-paper'), { scale: scale||2, backgroundColor:'#ffffff' });
+}
+document.getElementById('btn-png').addEventListener('click', async ()=>{
+  toast('Rendering PNG…');
+  const canvas = await captureCanvas(2);
+  canvas.toBlob(blob=> downloadBlob(blob, `${state.meta.number}.png`));
+});
+document.getElementById('btn-jpg').addEventListener('click', async ()=>{
+  toast('Rendering JPG…');
+  const canvas = await captureCanvas(2);
+  canvas.toBlob(blob=> downloadBlob(blob, `${state.meta.number}.jpg`), 'image/jpeg', 0.95);
+});
+async function exportPDF(scale){
+  const canvas = await captureCanvas(scale);
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({ unit:'px', format:[canvas.width, canvas.height] });
+  pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, canvas.width, canvas.height);
+  pdf.save(`${state.meta.number}.pdf`);
+}
+document.getElementById('btn-pdf').addEventListener('click', ()=>{ toast('Rendering PDF…'); exportPDF(2); });
+document.getElementById('btn-pdf-hd').addEventListener('click', ()=>{ toast('Rendering high-res PDF…'); exportPDF(4); });
+
+/* (Light mode only — clean, neutral, no dark mode) */
+
+/* ============================ INIT ============================ */
+renderFeatures();
+renderTemplateGallery();
+bindFields();
+renderRecent();
+renderAll();
+</script>
+</body>
+</html>
